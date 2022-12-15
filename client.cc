@@ -11,6 +11,10 @@
 
 static int have_response = 0;
 
+void message_handler(const coap_pdu_t *received) {
+ printf("değer alındı!\n");
+}
+
 int
 main(void) {
   coap_context_t  *ctx = nullptr;
@@ -25,7 +29,7 @@ main(void) {
   coap_set_log_level(LOG_WARNING);
 
   /* resolve destination address where server should be sent */
-  if (resolve_address("coap.me", "5683", &dst) < 0) {
+  if (resolve_address("127.0.0.1", "5683", &dst) < 0) {
     coap_log(LOG_CRIT, "failed to resolve address\n");
     goto finish;
   }
@@ -51,6 +55,7 @@ main(void) {
                                          auto) {
                                         have_response = 1;
                                         coap_show_pdu(LOG_WARNING, received);
+                                        //message_handler(received);
                                         return COAP_RESPONSE_OK;
                                       });
   /* construct CoAP message */
@@ -64,10 +69,11 @@ main(void) {
   }
 
   /* add a Uri-Path option */
-  coap_add_option(pdu, COAP_OPTION_URI_PATH, 5,
-                  reinterpret_cast<const uint8_t *>("hello"));
+  coap_add_option(pdu, COAP_OPTION_URI_PATH, 4,
+                  reinterpret_cast<const uint8_t *>("temp"));
 
-  coap_show_pdu(LOG_WARNING, pdu);
+  // gönderilen pdu göster
+  //coap_show_pdu(LOG_WARNING, pdu);
   /* and send the PDU */
   coap_send(session, pdu);
 
